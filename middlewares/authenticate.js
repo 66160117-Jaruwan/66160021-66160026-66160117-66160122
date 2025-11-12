@@ -34,7 +34,7 @@ const authenticate = async (req, res, next) => {
     }
 
     const [users] = await db.query(
-      `SELECT id, email, name, role, is_premium AS isPremium,
+      `SELECT id, email, name, role, isPremium AS isPremium,
               subscription_expiry AS subscriptionExpiry,
               created_at AS createdAt
        FROM users

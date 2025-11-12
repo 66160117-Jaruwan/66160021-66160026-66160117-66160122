@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS users (
   createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+
 -- ============================================
 -- BLACKLISTED TOKENS TABLE (Added by Person 2)
 -- ============================================
