@@ -10,7 +10,7 @@ cd <your-project-directory></pre>
 
 ## 2. ติดตั้ง Dependencies
 
-`npm install`
+`npm install uuid bcrypt jsonwebtoken`
 
 ---
 
@@ -19,7 +19,7 @@ cd <your-project-directory></pre>
 สร้างไฟล์ `.env` ที่ Root ของโปรเจกต์ (ที่เดียวกับ `server.js`) และคัดลอกเนื้อหาด้านล่างไปวาง จากนั้นเติมค่าที่จำเป็น (โดยเฉพาะ `DB_USER`, `DB_PASS`)
 ## ข้อมูลโค้ด
 ### Server Port
-`PORT=8100`
+`PORT=8200`
 
 ### Database (ตั้งค่าให้ตรงกับ MySQL Server ของคุณ)
 <pre>DB_HOST=127.0.0.1
@@ -103,31 +103,32 @@ VALUES (
 
 `npm start`
 
-เซิร์ฟเวอร์จะรันที่ http://localhost:8100 (ตาม PORT ใน .env)
+#### เซิร์ฟเวอร์จะรันที่ http://localhost:8200 (ตาม PORT ใน .env)
+
 ---
 ---
 # features
 - User & Authentication (ระบบผู้ใช้):
-สมัครสมาชิก (Register)
-เข้าสู่ระบบ (Login) ด้วย JWT (Access & Refresh Tokens)
-ต่ออายุ Token (Refresh Token)
-ออกจากระบบ (Logout)
-ดึงข้อมูลโปรไฟล์ตัวเอง (/me)
-แก้ไขข้อมูลโปรไฟล์ตัวเอง
-ลบบัญชีตัวเอง
+1. สมัครสมาชิก (Register)
+2. เข้าสู่ระบบ (Login) ด้วย JWT (Access & Refresh Tokens)
+3. ต่ออายุ Token (Refresh Token)
+4. ออกจากระบบ (Logout)
+5. ดึงข้อมูลโปรไฟล์ตัวเอง (/me)
+6. แก้ไขข้อมูลโปรไฟล์ตัวเอง
+7. ลบบัญชีตัวเอง
 - Task Management (ระบบ Task):
-สร้าง Task (รองรับ Idempotency-Key)
-ดึงรายการ Task ทั้งหมด (ของตัวเอง) พร้อม Filter
-ดึงรายละเอียด Task (ตาม ID)
-แก้ไข Task (Full Update)
-อัปเดตเฉพาะ Status ของ Task
-ลบ Task
+1. สร้าง Task (รองรับ Idempotency-Key)
+2. ดึงรายการ Task ทั้งหมด (ของตัวเอง) พร้อม Filter
+3. ดึงรายละเอียด Task (ตาม ID)
+4. แก้ไข Task (Full Update)
+5. อัปเดตเฉพาะ Status ของ Task
+6. ลบ Task
 - Admin (ระบบผู้ดูแล):
-ดึงรายชื่อผู้ใช้ทั้งหมด (Admin only)
-Security (ความปลอดภัย):
-เข้ารหัสรหัสผ่านด้วย bcrypt
-ยืนยันตัวตนด้วย JWT
-กำหนดสิทธิ์การเข้าถึง (User vs Admin)
+1. ดึงรายชื่อผู้ใช้ทั้งหมด (Admin only)
+2. Security (ความปลอดภัย):
+3. เข้ารหัสรหัสผ่านด้วย bcrypt
+4. ยืนยันตัวตนด้วย JWT
+5. กำหนดสิทธิ์การเข้าถึง (User vs Admin)
 ---
 ---
 # tech stack
