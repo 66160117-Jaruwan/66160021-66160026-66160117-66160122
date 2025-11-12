@@ -46,7 +46,7 @@ JWT_REFRESH_EXPIRE=7d</pre>
 
 สร้างตาราง (Tables):
 รัน SQL นี้ (ในฐานข้อมูล mini_task_mysql) เพื่อสร้างตาราง users และ tasks
-<pre>-- สร้างตาราง users (อ้างอิงจากโครงสร้างของคุณ และแก้ไข id ให้ถูกต้อง)
+<pre>//สร้างตาราง users
 CREATE TABLE users (
   id INT NOT NULL AUTO_INCREMENT,
   email VARCHAR(100) NOT NULL UNIQUE,
@@ -72,7 +72,7 @@ CREATE TABLE tasks (
   FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 );</pre>
 
-(Optional) สร้าง User Admin สำหรับทดสอบ :
+(Optional) สร้าง User Admin สำหรับทดสอบ : 
 เพื่อให้ผู้สอนทดสอบ API ส่วน Admin (GET /api/v1/users) ได้ทันที ให้รัน SQL นี้เพื่อสร้างบัญชี Admin (รหัสผ่านคือ adminpass)
 
 <pre>```//รหัสผ่าน 'adminpass' ที่ถูก hash ด้วย bcrypt
