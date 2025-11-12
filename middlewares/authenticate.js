@@ -36,7 +36,7 @@ const authenticate = async (req, res, next) => {
     const [users] = await db.query(
       `SELECT id, email, name, role, isPremium AS isPremium,
               subscriptionExpiry AS subscriptionExpiry,
-              created_at AS createdAt
+              createdAt AS createdAt
        FROM users
        WHERE id = ?`,
       [decoded.userId || decoded.id]
