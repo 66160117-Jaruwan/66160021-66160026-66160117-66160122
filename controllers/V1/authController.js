@@ -122,11 +122,10 @@ exports.login = async (req, res, next) => {
         email: user.email,
         name: user.name,
         role: user.role,
-        isPremium: user.isPremium
+        isPremium: user.isPremium,
       },
       accessToken: accessToken,
       refreshToken: refreshToken,
-      
     });
   } catch (error) {
     next(error);
