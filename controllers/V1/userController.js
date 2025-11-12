@@ -1,47 +1,137 @@
-const User = require('../../models/userModel');
+const db = require("../../config/db");
+const bcrypt = require("bcrypt");
 
-// ดึงผู้ใช้ทั้งหมด
-exports.getAllUsers = (req, res) => {
-  User.getAll((err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
-  });
+// --- (A) User Endpoints (/me) ---
+exports.getMe = async (req, res, next) => {
+  try {
+    if (!req.user) {
+      const err = new Error("User not found (from getMe)");
+      err.statusCode = 404;
+      err.code = "NOT_FOUND";
+      return next(err);
+    }
+    res.status(200).json(req.user);
+  } catch (error) {
+    next(error);
+  }
 };
 
-// ดึงผู้ใช้ตาม id
-exports.getUserById = (req, res) => {
-  const { id } = req.params;
-  User.getById(id, (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    if (results.length === 0) return res.status(404).json({ message: 'User not found' });
-    res.json(results[0]);
-  });
+exports.updateMe = async (req, res, next) => {
+  try {
+    const { id } = req.user; // (ID จาก Token)
+    const { name, email } = req.body;
+    if (!name || !email) {
+      const err = new Error("Name and email are required");
+      err.statusCode = 400;
+      err.code = "MISSING_FIELDS";
+      return next(err);
+    }
+
+    const [result] = await db.query(
+      "UPDATE users SET name = ?, email = ? WHERE id = ?",
+      [name, email, id]
+    );
+
+    if (result.affectedRows === 0) {
+      const err = new Error("User not found");
+      err.statusCode = 404;
+      err.code = "NOT_FOUND";
+      return next(err);
+    }
+
+    res.status(200).json({ message: "User updated successfully" });
+  } catch (error) {
+    // (เช็ค Error พิเศษ: ถ้า Email ซ้ำ)
+    if (error.code === "ER_DUP_ENTRY") {
+      const err = new Error("This email is already in use.");
+      err.statusCode = 409;
+      err.code = "EMAIL_EXISTS";
+      return next(err);
+    }
+    next(error);
+  }
 };
 
-// เพิ่มผู้ใช้ใหม่
-exports.createUser = (req, res) => {
-  const data = req.body;
-  User.create(data, (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.status(201).json({ id: result.insertId, ...data });
-  });
+exports.deleteMe = async (req, res, next) => {
+  try {
+    const { id } = req.user; // (ID จาก Token)
+
+    await db.query("DELETE FROM users WHERE id = ?", [id]);
+
+    res.status(200).json({ message: "User account deleted successfully" });
+  } catch (error) {
+    next(error);
+  }
 };
 
-// อัปเดตข้อมูลผู้ใช้
-exports.updateUser = (req, res) => {
-  const { id } = req.params;
-  const data = req.body;
-  User.update(id, data, (err) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: 'User updated successfully' });
-  });
+// --- (B) Admin Endpoints (/) ---
+exports.getAllUsers = async (req, res, next) => {
+  try {
+    const [users] = await db.query(
+      "SELECT id, email, name, role, isPremium, createdAt FROM users"
+    );
+    res.status(200).json(users);
+  } catch (error) {
+    next(error);
+  }
 };
 
-// ลบผู้ใช้
-exports.deleteUser = (req, res) => {
-  const { id } = req.params;
-  User.delete(id, (err) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: 'User deleted successfully' });
-  });
+exports.getUserById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const [users] = await db.query(
+      "SELECT id, email, name, role, isPremium, subscriptionExpiry, createdAt FROM users WHERE id = ?",
+      [id]
+    );
+
+    if (users.length === 0) {
+      const err = new Error("User not found");
+      err.statusCode = 404;
+      err.code = "NOT_FOUND";
+      return next(err);
+    }
+    res.status(200).json(users[0]);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name, email, role, isPremium } = req.body;
+
+    if (!name || !email || !role) {
+      const err = new Error("Name, email, and role are required");
+      err.statusCode = 400;
+      err.code = "MISSING_FIELDS";
+      return next(err);
+    }
+
+    await db.query(
+      "UPDATE users SET name = ?, email = ?, role = ?, isPremium = ? WHERE id = ?",
+      [name, email, role, isPremium || false, id]
+    );
+
+    res.status(200).json({ message: "User updated successfully (by Admin)" });
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      const err = new Error("This email is already in use.");
+      err.statusCode = 409;
+      err.code = "EMAIL_EXISTS";
+      return next(err);
+    }
+    next(error);
+  }
+};
+
+exports.deleteUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    await db.query("DELETE FROM users WHERE id = ?", [id]);
+    res.status(200).json({ message: "User deleted successfully (by Admin)" });
+  } catch (error) {
+    next(error);
+  }
 };
