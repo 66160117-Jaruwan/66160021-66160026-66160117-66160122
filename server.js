@@ -2,7 +2,8 @@ const express = require("express");
 const dotenv = require("dotenv");
 const app = express();
 
-
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 dotenv.config();
 
@@ -15,8 +16,6 @@ const authRoutesV1 = require("./routes/V1/authRoutes");
 // Import (V2)
 // const taskRoutesV2 = require('./routes/V2/taskRoutes');
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
   res.send("Mini Task API Running...");
